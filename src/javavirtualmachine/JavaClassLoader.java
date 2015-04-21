@@ -5,6 +5,10 @@
  */
 package javavirtualmachine;
 
+import JavaInfo.AttributeInfo;
+import JavaInfo.ClassInfo;
+import JavaInfo.ConstantInfo;
+import JavaInfo.MethodInfo;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -37,6 +41,7 @@ public class JavaClassLoader {
     public static final byte CONSTANT_METHOD_HANDLE = 15;
     public static final byte CONSTANT_METHOD_TYPE = 16;
     public static final byte CONSTANT_UTF8 = 1;
+    public static final byte INVOKE_DYNAMIC = 18;
     
     public int GetSize(byte tag){
         int size = 0;
@@ -77,29 +82,98 @@ public class JavaClassLoader {
             case CONSTANT_METHOD_TYPE:
                 size = 2;
                 break;
+            case INVOKE_DYNAMIC:
+                size = 4;
+                break;
         }
         
         return size;
     }
     
-    public byte[] GetSubByteArray(byte[] byteArray,  int index1, int index2){
-        byte[] subArray = new byte[index2 - index1 + 1];
-        int j = 0;
-        for(int i = index1; i < index2 + 1; i++){
-            subArray[j++] = byteArray[i]; 
-        }
+    
+    
+    public AttributeInfo ReadAtrribute(DataInputStream dis) throws IOException{
+        AttributeInfo info = new AttributeInfo();
+        info.AttributeNameIndex = dis.readUnsignedShort();
+        info.AttributeLength = dis.readInt();
         
-        return subArray;
+        info.Attribute = new byte[info.AttributeLength];
+        dis.readFully(info.Attribute);
+        
+        return info;
     }
     
-    public int BytePairToInt(byte[] byteArray, int index1, int index2){
-        StringBuilder sb = new StringBuilder();
-
-        byte[] subArray = GetSubByteArray(byteArray, index1, index2);
+    public MethodInfo ReadMethod(DataInputStream dis) throws IOException{
+        MethodInfo info = new MethodInfo();
         
-        ByteBuffer bb = ByteBuffer.wrap(subArray);
-        bb.order(ByteOrder.BIG_ENDIAN);
-        return bb.getShort();
+        info.Accessflags = dis.readUnsignedShort();
+        info.NameIndex = dis.readUnsignedShort();
+        info.DescriptorIndex = dis.readUnsignedShort();
+        
+        info.AttributesCount = dis.readUnsignedShort();
+        info.Attributes = new AttributeInfo[info.AttributesCount];
+        for(int i = 0; i < info.AttributesCount; i++){
+            info.Attributes[i] = ReadAtrribute(dis);
+        }
+        
+        return info;
+    }
+    
+    public ConstantInfo ReadConstant(DataInputStream dis) throws IOException{
+        ConstantInfo info = new ConstantInfo();
+        info.Tag = dis.readByte();
+        info.Size = GetSize(info.Tag);
+        if(info.Tag == CONSTANT_UTF8){
+            info.Size = dis.readUnsignedShort();
+            dis.skip(info.Size);
+        }else{
+            dis.skip(info.Size);
+        }
+
+        return info;
+    }
+    
+    public ClassInfo ReadClass(DataInputStream dis) throws IOException{
+        ClassInfo info = new ClassInfo();
+        
+        info.MagicNumber = dis.readInt();
+        info.MinorVersion = dis.readUnsignedShort();
+        info.MajorVersion = dis.readUnsignedShort();
+        info.ConstantPoolCount = dis.readUnsignedShort();
+        info.ConstantPoolTable = new ConstantInfo[info.ConstantPoolCount - 1];
+        for(int i = 0; i < info.ConstantPoolCount - 1; i++){
+            info.ConstantPoolTable[i] = ReadConstant(dis);
+        }
+
+        info.AccessFlags = dis.readUnsignedShort();
+        info.ThisClass = dis.readUnsignedShort();
+        info.SuperClass = dis.readUnsignedShort();
+        info.InterfaceCount = dis.readUnsignedShort();
+        info.Interfaces = new int[info.InterfaceCount];
+        for(int i = 0; i < info.InterfaceCount; i++){
+            info.Interfaces[i] = dis.readUnsignedShort();
+        }
+
+        info.FieldsCount = dis.readUnsignedShort();
+
+        info.FieldsTable = new int[info.FieldsCount];
+        for(int i = 0; i < info.FieldsCount; i++){
+            info.FieldsTable[i] = dis.readUnsignedShort();
+        }
+
+        info.MethodCount = dis.readUnsignedShort();
+        info.Methods = new MethodInfo[info.MethodCount];
+        for(int i = 0; i < info.MethodCount; i++){
+            info.Methods[i] = ReadMethod(dis);
+        }
+
+        info.AttributeCount = dis.readUnsignedShort();
+        info.AttributesTable = new int[info.AttributeCount];
+        for(int i = 0; i < info.AttributeCount; i++){
+            ReadAtrribute(dis);
+        }
+        
+        return info;
     }
     
     public void Load(String fileUrl){
@@ -107,52 +181,15 @@ public class JavaClassLoader {
         try {
             File file = new File(fileUrl);
             InputStream is = new FileInputStream(file);
-            // create data input stream
             DataInputStream dis = new DataInputStream(new BufferedInputStream(is));
-            int magicNumber = dis.readInt();
-            int minorVersion = dis.readUnsignedShort();
-            int majorVersion = dis.readUnsignedShort();
-            int constantPoolCount = dis.readUnsignedShort();
-            for(int i = 0; i < constantPoolCount; i++){
-                byte tag = dis.readByte();
-                int size = GetSize(tag);
-                if(tag == CONSTANT_UTF8){
-                    int utfSize = dis.readUnsignedShort();
-                    dis.skip(utfSize);
-                }else{
-                    dis.skip(size);
-                }
-            }
             
-            int accessFlags = dis.readUnsignedShort();
-            String flags = Integer.toHexString(accessFlags);
+            ClassInfo info = ReadClass(dis);
             
-            int thisClass = dis.readUnsignedShort();
-            int superClass = dis.readUnsignedShort();
-            int interfaceCount = dis.readUnsignedShort();
-            int[] interfaces = new int[interfaceCount];
-            for(int i = 0; i < interfaceCount; i++){
-                interfaces[i] = dis.readUnsignedShort();
-            }
+            Boolean isEnd = dis.read() == -1 ;
             
-            int fieldsCount = dis.readUnsignedShort();
-            int[] fieldsTable = new int[fieldsCount];
-            for(int i = 0; i < fieldsCount; i++){
-                fieldsTable[i] = dis.readUnsignedShort();
-            }
-            
-            byte[] res = new byte[100];
-            int a = dis.read(res);
-            
-            int methodCount = dis.readUnsignedShort();
-            
-            
-           
-            
-
+            int a = 5;
         } catch (IOException ex) {
             Logger.getLogger(JavaClassLoader.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
     }
 }
