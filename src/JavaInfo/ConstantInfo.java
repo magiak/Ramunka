@@ -12,4 +12,19 @@ package JavaInfo;
 public class ConstantInfo {
     public byte Tag;
     public int Size;
+    
+    //CONSTANT_CLASS:
+    public int NameIndex;
+    
+    //CONSTANT_METHODREF:
+    public int NameAndTypeIndex;
+    public int ClassIndex;
+    
+    //CONSTANT_NAME_AND_TYPE:
+    //public int NameIndex;
+    public int DescriptorIndex;
+    
+    //CONSTANT_UTF8
+    public int Length;
+    public String String;
 }
