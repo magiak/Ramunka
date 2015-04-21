@@ -59,6 +59,7 @@ public class JavaVirtualMachine {
         // TODO code application logic here
         JVM jvm = new JVM(classFiles, new Interpreter(new JvmMemory()));
         List<String> bytecode = TestBytecode1();
+        
         jvm.Execute(bytecode);
     }
 }
