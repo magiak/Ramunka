@@ -16,21 +16,6 @@ import java.util.List;
  */
 public class JavaVirtualMachine {
 
-    public static List<String> TestBytecode1(){
-        List<String> bytecode = new ArrayList<String>();
-        bytecode.add("x2 20");
-        bytecode.add("istore_1");
-        bytecode.add("iconst_2");
-        bytecode.add("istore_2");
-        bytecode.add("iload_1");
-        bytecode.add("iload_2");
-        bytecode.add("iadd");
-        bytecode.add("istore_3");
-        bytecode.add("return");
-        
-        return bytecode;
-    }
-    
     /**
      * @param args the command line arguments
      */
@@ -54,12 +39,9 @@ public class JavaVirtualMachine {
             }
         }
         
-        
-        
         // TODO code application logic here
         JVM jvm = new JVM(classFiles, new Interpreter(new JvmMemory()));
-        List<String> bytecode = TestBytecode1();
         
-        jvm.Execute(bytecode);
+        jvm.Execute();
     }
 }

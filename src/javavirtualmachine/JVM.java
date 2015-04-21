@@ -23,13 +23,17 @@ public class JVM {
     private List<String> _classFiles;
     private Interpreter _interpreter;
     private JvmMemory _memory;
+    private JavaClassLoader _javaClassLoader;
     
     public JVM(List<String> classFiles, Interpreter interpreter){
         _interpreter = interpreter;
         _classFiles = classFiles;
+        _javaClassLoader = new JavaClassLoader();
     }
     
-    public void Execute(List<String> instructionSet){
-        _interpreter.Execute(instructionSet);
+    public void Execute(){
+        for(String file : _classFiles){
+            _javaClassLoader.Load(file);
+        }
     }
 }
