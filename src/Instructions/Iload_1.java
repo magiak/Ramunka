@@ -9,9 +9,9 @@ package Instructions;
  *
  * @author lkmoch
  */
-public class Iload extends Instruction {
+public class Iload_1 extends Instruction {
     @Override
     public void Execute(){
-        
+        Frame.OperandStack.Push(Frame.LocalVariables.get(1));
     }
 }

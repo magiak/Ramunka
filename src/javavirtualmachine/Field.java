@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Memory;
+package javavirtualmachine;
 
 /**
  *
  * @author lkmoch
  */
-public class ObjectHeap {
+public class Field {
     
 }

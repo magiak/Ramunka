@@ -5,7 +5,9 @@
  */
 package Instructions;
 
-import Memory.JvmMemory;
+import JvmStack.OperandStack;
+import java.io.EOFException;
+import java.io.IOException;
 
 /**
  *
@@ -13,7 +15,7 @@ import Memory.JvmMemory;
  */
 public class ReturnInst extends Instruction {
     @Override
-    public void Execute(Integer par){
-        
+    public void Execute() throws IOException{
+        CurrentPosition = CodeLength;
     }
 }

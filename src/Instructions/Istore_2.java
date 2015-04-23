@@ -5,15 +5,13 @@
  */
 package Instructions;
 
-import Memory.JvmMemory;
-
 /**
  *
  * @author lkmoch
  */
-public class Iconst extends Instruction {
+public class Istore_2 extends Instruction {
     @Override
-    public void Execute(Integer par){
-        
+    public void Execute(){
+        Frame.LocalVariables.put(2, Frame.OperandStack.Pop());
     }
 }

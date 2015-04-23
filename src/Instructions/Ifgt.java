@@ -6,20 +6,20 @@
 package Instructions;
 
 import ByteHelper.ByteReader;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javavirtualmachine.Tuple;
 
 /**
  *
  * @author lkmoch
  */
-public class Bipush extends Instruction {
+public class Ifgt extends Instruction {
     @Override
     public void Execute(){
-        Tuple<Byte, Integer> tuple = ByteReader.ReadByte(Code, CurrentPosition);
-        Frame.OperandStack.Push((int)tuple.Object1);
+        Tuple<Integer,Integer> tuple = ByteReader.ReadShort(Code, CurrentPosition);
         CurrentPosition = tuple.Object2;
+        int value = (int)Frame.OperandStack.Pop();
+        if(value > 0){
+            CurrentPosition += tuple.Object1 - 3;
+        }
     }
 }

@@ -5,7 +5,7 @@
  */
 package Instructions;
 
-import Memory.JvmMemory;
+import JvmStack.OperandStack;
 
 /**
  *
@@ -13,7 +13,12 @@ import Memory.JvmMemory;
  */
 public class Iadd extends Instruction {
     @Override
-    public void Execute(Integer par){
+    public void Execute(){
+       OperandStack stack = Frame.OperandStack;
         
+       int cislo1 = (int)Frame.OperandStack.Pop();
+       int cislo2 = (int)Frame.OperandStack.Pop();
+       
+       Frame.OperandStack.Push(cislo2 + cislo1);
     }
 }

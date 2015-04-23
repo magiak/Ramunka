@@ -5,15 +5,13 @@
  */
 package Instructions;
 
-import Memory.JvmMemory;
-
 /**
  *
  * @author lkmoch
  */
 public class Istore extends Instruction {
     @Override
-    public void Execute(Integer par){
+    public void Execute(){
         
     }
 }

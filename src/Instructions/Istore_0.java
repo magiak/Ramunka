@@ -3,18 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Memory;
+package Instructions;
 
 /**
  *
  * @author lkmoch
  */
-public class JvmMemory {
-    private ClassHeap _classHeap;
-    private ObjectHeap _objectHeap;
-    
-    public JvmMemory(){
-        _classHeap = new ClassHeap();
-        _objectHeap = new ObjectHeap();
+public class Istore_0 extends Instruction {
+    @Override
+    public void Execute(){
+        Frame.LocalVariables.put(0, Frame.OperandStack.Pop());
     }
 }

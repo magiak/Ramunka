@@ -5,6 +5,8 @@
  */
 package JavaInfo;
 
+import static JavaInfo.AttributeInfo.ATTRIBUTE_CODE;
+
 /**
  *
  * @author lkmoch
@@ -17,4 +19,13 @@ public class MethodInfo {
     public int AttributesCount;
        
     public AttributeInfo[] Attributes;
+    
+    public AttributeInfo GetCodeAttribute(){
+        for(AttributeInfo info : Attributes){
+            if(info.Tag == ATTRIBUTE_CODE)
+                return info;
+        }
+        
+        return null;
+    }
 }

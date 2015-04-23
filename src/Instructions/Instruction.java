@@ -5,14 +5,25 @@
  */
 package Instructions;
 
-import Memory.JvmMemory;
+import JavaInfo.ClassInfo;
+import JvmHeap.Heap;
+import JvmStack.Frame;
+import java.io.DataInputStream;
+import java.io.IOException;
+import javavirtualmachine.Interpreter;
 
 /**
  *
  * @author lkmoch
  */
 public abstract class Instruction {
-    public JvmMemory Memory;
+    public ClassInfo ClassInfo;
+    public int CurrentPosition;
+    public byte[] Code;
+    public int CodeLength;
+    public Heap Heap;
+    public Frame Frame;
+    public Interpreter Interpreter;
     
-    public abstract void Execute(Integer par);
+    public abstract void Execute() throws IOException;
 }

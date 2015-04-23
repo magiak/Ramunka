@@ -5,13 +5,18 @@
  */
 package Instructions;
 
+import ByteHelper.ByteReader;
+import javavirtualmachine.Tuple;
+
 /**
  *
  * @author lkmoch
  */
-public class Iload extends Instruction {
+public class Goto extends Instruction {
     @Override
     public void Execute(){
-        
+        Tuple<Integer,Integer> tuple = ByteReader.ReadShort(Code, CurrentPosition);
+        CurrentPosition = tuple.Object2;
+        CurrentPosition += tuple.Object1 - 3;
     }
 }

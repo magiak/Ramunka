@@ -27,4 +27,18 @@ public class ConstantInfo {
     //CONSTANT_UTF8
     public int Length;
     public String String;
+    
+    //CONSTANT_FIELDREF
+    //public int ClassIndex;
+    //public int NameAndTypeIndex;
+    
+    //CONSTANT_STRING
+    public int StringIndex;
+    
+    //CONSTANT_INTEGER:
+    public int Bytes;
+    
+    //CONSTANT_METHOD_HANDLE:
+    public byte ReferenceKind;
+    public int ReferenceIndex;
 }

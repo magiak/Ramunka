@@ -5,10 +5,12 @@
  */
 package javavirtualmachine;
 
-import Memory.JvmMemory;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -40,8 +42,13 @@ public class JavaVirtualMachine {
         }
         
         // TODO code application logic here
-        JVM jvm = new JVM(classFiles, new Interpreter(new JvmMemory()));
+        String mainClassFileName = "JavaApplication1.class";
+        JVM jvm = new JVM(mainClassFileName, classFiles, new Interpreter());
         
-        jvm.Execute();
+        try {
+            jvm.Execute();
+        } catch (IOException ex) {
+            Logger.getLogger(JavaVirtualMachine.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

@@ -9,9 +9,9 @@ package Instructions;
  *
  * @author lkmoch
  */
-public class Iload extends Instruction {
+public class Iconst_3 extends Instruction {
     @Override
     public void Execute(){
-        
+        Frame.OperandStack.Push(3);
     }
 }

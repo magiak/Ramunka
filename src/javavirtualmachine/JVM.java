@@ -5,35 +5,49 @@
  */
 package javavirtualmachine;
 
-import Instructions.Iconst;
+import Exceptions.LoadFileClassIsNotCompletedException;
+import Instructions.Iconst_0;
 import Instructions.Instruction;
-import Memory.ClassHeap;
-import Memory.JvmMemory;
-import Memory.ObjectHeap;
+import JavaInfo.ClassInfo;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author lkmoch
  */
 public class JVM {
+    private String _mainClassFileName;
     private List<String> _classFiles;
     private Interpreter _interpreter;
-    private JvmMemory _memory;
-    private JavaClassLoader _javaClassLoader;
     
-    public JVM(List<String> classFiles, Interpreter interpreter){
+    
+    public JVM(String mainClassFileName, List<String> classFiles, Interpreter interpreter){
+        _mainClassFileName = mainClassFileName;
         _interpreter = interpreter;
         _classFiles = classFiles;
-        _javaClassLoader = new JavaClassLoader();
     }
     
-    public void Execute(){
-        for(String file : _classFiles){
-            _javaClassLoader.Load(file);
+    public void Execute() throws IOException{
+        ClassInfo classInfo = null;
+        try {
+            classInfo = JavaClassLoader.Load(_mainClassFileName);
+        } catch (LoadFileClassIsNotCompletedException ex) {
+            Logger.getLogger(JVM.class.getName()).log(Level.SEVERE, null, ex);
         }
+                
+        System.out.println("KONEC NACITANI HLAVNIHO CLASS FILE");
+        
+        
+        //Interpret
+        _interpreter.Execute(classInfo, _classFiles);
+        
+        System.out.println("KONEC!!!!!!");
     }
 }

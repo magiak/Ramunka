@@ -15,9 +15,9 @@ public enum InstructionTypes {
     returnInst,
     
     //Prace s int
-    iconst, //ekvivalent k bipush ale umi pouze cisla -1 az 5
+    iconst, //ekvivalent k bipush ale umi pouze cisla -1 az 5 
     bipush, //ekvivalent k i const
-    istore_,
+    istore_, 
     iload_,
     
     //Prace s objekty

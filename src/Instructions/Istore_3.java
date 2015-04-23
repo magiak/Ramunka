@@ -3,12 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Memory;
+package Instructions;
 
 /**
  *
  * @author lkmoch
  */
-public class ClassHeap {
-    
+public class Istore_3 extends Instruction {
+    @Override
+    public void Execute(){
+        
+        Frame.LocalVariables.put(3, Frame.OperandStack.Pop());
+    }
 }

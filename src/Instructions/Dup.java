@@ -5,13 +5,20 @@
  */
 package Instructions;
 
+import JvmStack.OperandStack;
+
 /**
  *
  * @author lkmoch
  */
-public class Iload extends Instruction {
+public class Dup extends Instruction {
     @Override
     public void Execute(){
+       OperandStack stack = Frame.OperandStack;
         
+       Object object = Frame.OperandStack.Pop();
+       
+       Frame.OperandStack.Push(object);
+       Frame.OperandStack.Push(object);
     }
 }
