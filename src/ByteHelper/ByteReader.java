@@ -29,6 +29,6 @@ public class ByteReader {
     public static Tuple<Byte, Integer> ReadByte(byte[] byteArray, int index){
         ByteBuffer bb = ByteBuffer.wrap(byteArray);
         bb.order(ByteOrder.BIG_ENDIAN);
-        return new Tuple<Byte, Integer>(bb.get(index), index + 1);
+        return new Tuple<Byte, Integer>((byte)(bb.get(index) & 0xff), index + 1);
     }
 }

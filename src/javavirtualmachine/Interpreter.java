@@ -11,12 +11,14 @@ import Instructions.Aload_0;
 import Instructions.Aload_1;
 import Instructions.Aload_2;
 import Instructions.Aload_3;
+import Instructions.Arraylength;
 import Instructions.Astore_0;
 import Instructions.Astore_1;
 import Instructions.Astore_2;
 import Instructions.Astore_3;
 import Instructions.Bipush;
 import Instructions.Dup;
+import Instructions.Getfield;
 import Instructions.Getstatic;
 import Instructions.Goto;
 import Instructions.Iadd;
@@ -28,10 +30,16 @@ import Instructions.Iconst_2;
 import Instructions.Iconst_3;
 import Instructions.Iconst_4;
 import Instructions.Iconst_5;
+import Instructions.If_icmpeq;
+import Instructions.If_icmpge;
+import Instructions.If_icmpgt;
+import Instructions.If_icmple;
+import Instructions.If_icmpne;
 import Instructions.Ifeq;
 import Instructions.Ifne;
 import Instructions.Ifnonnull;
 import Instructions.Ifnull;
+import Instructions.Iinc;
 import Instructions.Iload;
 import Instructions.Iload_0;
 import Instructions.Iload_1;
@@ -53,6 +61,7 @@ import Instructions.Ldc;
 import Instructions.New;
 import Instructions.Newarray;
 import Instructions.Putfield;
+import Instructions.Putstatic;
 import Instructions.ReturnInst;
 import Instructions.ReturnResult;
 import JavaInfo.AttributeInfo;
@@ -62,6 +71,7 @@ import static JavaInfo.ClassInfo.CONSTANT_CLASS;
 import JavaInfo.ConstantInfo;
 import JavaInfo.MethodInfo;
 import JvmHeap.Heap;
+import JvmHeap.Instance;
 import JvmStack.Frame;
 import JvmStack.Stack;
 import java.io.BufferedInputStream;
@@ -74,7 +84,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.List;
-import static javavirtualmachine.InstructionTypes.ifne;
+import java.util.Map;
 
 /**
  *
@@ -85,7 +95,7 @@ public class Interpreter {
     private ClassInfo _mainClass;
     private List<String> _classes;
     
-    private Heap _heap;
+    //private Heap _heap;
     private Stack _stack;
 
     
@@ -117,8 +127,15 @@ public class Interpreter {
         _instructionMap.put((byte)154, new Ifne());
         _instructionMap.put((byte)198, new Ifnull());
         _instructionMap.put((byte)199, new Ifnonnull());
+        _instructionMap.put((byte)159, new If_icmpeq());
+        _instructionMap.put((byte)160, new If_icmpne());
+        _instructionMap.put((byte)161, new If_icmple());
+        _instructionMap.put((byte)162, new If_icmpge());
+        _instructionMap.put((byte)163, new If_icmpgt());
+        _instructionMap.put((byte)164, new If_icmple());
         _instructionMap.put((byte)167, new Goto());
         _instructionMap.put((byte)178, new Getstatic());
+        _instructionMap.put((byte)179, new Putstatic());
         _instructionMap.put((byte)187, new New());
         _instructionMap.put((byte)89, new Dup());
         _instructionMap.put((byte)182, new Invokevirtual());
@@ -142,10 +159,13 @@ public class Interpreter {
         _instructionMap.put((byte)188, new Newarray());
         _instructionMap.put((byte)79, new Iastore());
         _instructionMap.put((byte)46, new Iaload());
+        _instructionMap.put((byte)180, new Getfield());
         _instructionMap.put((byte)181, new Putfield());
+        _instructionMap.put((byte)190, new Arraylength());
+        _instructionMap.put((byte)132, new Iinc());
         //_instructionMap.put((byte), new );
         
-        _heap = new Heap();
+        //_heap = new Heap();
         _stack = new Stack();
     }
 
@@ -199,9 +219,21 @@ public class Interpreter {
         System.out.println("//KONEC PRINTU");
     }
     
+    public Object NativeMethod(MethodInfo methodInfo, ClassInfo classInfo, List<Object> args){
+        switch(classInfo.GetMethodName(methodInfo)){
+            case "print":
+                System.out.print(args.get(1));
+                break;
+            case "println":
+                System.out.println(args.get(1));
+                break;
+        }
+        
+        return null;
+    }
+    
     //Argumenty potrebuju v pripade kdy volam z jednoho invoke jiny
     public Object Invoke(MethodInfo methodInfo, ClassInfo classInfo, List<Object> args) throws IOException{
-
         //Vytvor novy frame v kterem bude tato metoda pracovat
         Frame frame = null;
         Object result = null;
@@ -233,12 +265,18 @@ public class Interpreter {
                 dis.readFully(code);
 
                 result = ExecuteCode(classInfo, frame, codeLength, code, args);
+            }else{
+                //Jde nejspis o nativni metodu
+                NativeMethod(methodInfo, classInfo, args);
+                
             }
         } finally {
             if (frame != null) {
                 //TODO smaz frame
             }
         }
+        
+        Map<Integer, Instance> resultInstances = Heap._instances;
         
         return result;
     }
@@ -260,7 +298,7 @@ public class Interpreter {
             instruction.CurrentPosition = currentPosition;
             instruction.Code = code;
             instruction.CodeLength = codeLength;
-            instruction.Heap = _heap;
+            //instruction.Heap = _heap;
             instruction.Frame = frame;
             instruction.Interpreter = this;
 
@@ -276,7 +314,7 @@ public class Interpreter {
     }
     
     public void Execute(ClassInfo classInfo, List<String> classFileList) throws IOException{
-        PrintClassInfo(classInfo);
+        //PrintClassInfo(classInfo);
         
         //TODO Reseni pocita jen s jednou class
         _mainClass = classInfo;

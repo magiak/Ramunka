@@ -12,6 +12,6 @@ package Instructions;
 public class Istore extends Instruction {
     @Override
     public void Execute(){
-        
+       int a = 5; 
     }
 }

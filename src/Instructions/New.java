@@ -9,7 +9,9 @@ import ByteHelper.ByteReader;
 import Exceptions.LoadFileClassIsNotCompletedException;
 import JavaInfo.ClassInfo;
 import JavaInfo.ConstantInfo;
+import JvmHeap.Heap;
 import JvmHeap.Instance;
+import JvmHeap.JvmClass;
 import JvmStack.OperandStack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,13 +33,16 @@ public class New extends Instruction {
         String classFileName = classNameInfo.String;
         ClassInfo newClassInfo = null;
         try {
-            newClassInfo = JavaClassLoader.Load(classFileName);
+            newClassInfo = JavaClassLoader.Load(classFileName, Interpreter);
         } catch (LoadFileClassIsNotCompletedException ex) {
             Logger.getLogger(New.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        Instance instance = new Instance();
-        instance.Object = newClassInfo;
+        
+        Instance instance = new Instance(newClassInfo);
+        instance.Class = JvmClass.Create(newClassInfo);
+        
+        
         int classInfoIndex = Heap.AddInstance(instance);
         Frame.OperandStack.Push(classInfoIndex);
         

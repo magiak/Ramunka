@@ -12,6 +12,7 @@ package Instructions;
 public class Iload extends Instruction {
     @Override
     public void Execute(){
-        
+        //TODO
+        int a = 5;
     }
 }

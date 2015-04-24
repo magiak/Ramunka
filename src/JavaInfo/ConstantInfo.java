@@ -16,7 +16,7 @@ public class ConstantInfo {
     //CONSTANT_CLASS:
     public int NameIndex;
     
-    //CONSTANT_METHODREF:
+    //CONSTANT_FIELDREF, CONSTANT_METHODREF a CONSTANT_INTERFACE_METHODREF:
     public int NameAndTypeIndex;
     public int ClassIndex;
     
@@ -28,17 +28,24 @@ public class ConstantInfo {
     public int Length;
     public String String;
     
-    //CONSTANT_FIELDREF
-    //public int ClassIndex;
-    //public int NameAndTypeIndex;
-    
     //CONSTANT_STRING
     public int StringIndex;
     
-    //CONSTANT_INTEGER:
+    //CONSTANT_INTEGER a CONSTANT_FLOAT:
     public int Bytes;
     
     //CONSTANT_METHOD_HANDLE:
     public byte ReferenceKind;
     public int ReferenceIndex;
+    
+    //CONSTANT_LONG a CONSTANT_DOUBLE:
+    public int HighBytes;
+    public int LowBytes;
+    
+    //CONSTANT_METHOD_TYPE:
+    //public int DescriptorIndex;
+    
+    //CONSTANT_INVOKE_DYNAMIC:
+    public int BootstrapMethodAttrIndex;
+    //public int NameAndTypeIndex;
 }

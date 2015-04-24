@@ -25,7 +25,18 @@ public class ClassInfo {
     public static final byte CONSTANT_METHOD_HANDLE = 15;
     public static final byte CONSTANT_METHOD_TYPE = 16;
     public static final byte CONSTANT_UTF8 = 1;
-    public static final byte INVOKE_DYNAMIC = 18;
+    public static final byte CONSTANT_INVOKE_DYNAMIC = 18;
+    
+    public static final int ACC_PUBLIC = 0x0001;
+    public static final int ACC_FINAL = 0x0010;
+    public static final int ACC_SUPER = 0x0020;
+    public static final int ACC_INTERFACE = 0x0200;
+    public static final int ACC_ABSTRACT = 0x0400;
+    public static final int ACC_SYNTHETIC = 0x1000;
+    public static final int ACC_ANNOTATION = 0x2000;
+    public static final int ACC_ENUM = 0x4000;
+    
+    public Boolean IsInicialized;
     
     public int MagicNumber;
     public int MinorVersion;
@@ -42,13 +53,39 @@ public class ClassInfo {
     public int[] Interfaces;
 
     public int FieldsCount;
-    public int[] FieldsTable;
+    public FieldInfo[] FieldsTable;
     
     public int MethodCount;
     public MethodInfo[] Methods;
 
     public int AttributeCount;
     public AttributeInfo[] AttributesTable;
+    
+    public String GetFieldName(FieldInfo fieldInfo){
+        ConstantInfo nameConstant = ConstantPoolTable[fieldInfo.NameIndex - 1];
+        return nameConstant.String;
+    }
+    
+    public FieldInfo GetField(String name){
+        for(FieldInfo fieldInfo : FieldsTable){
+            String fieldName = GetFieldName(fieldInfo);
+            if(fieldName == null ? name == null : fieldName.equals(name)){
+                return fieldInfo;
+            }
+        }
+        
+        return null;
+    }
+    
+    public FieldInfo GetField(int nameIndex, int descriptorIndex){
+        for(FieldInfo fieldInfo : FieldsTable){
+            if(fieldInfo.NameIndex == nameIndex && fieldInfo.DescriptorIndex == descriptorIndex){
+                return fieldInfo;
+            }
+        }
+        
+        return null;
+    }
     
     public String GetMethodName(MethodInfo methodInfo){
         ConstantInfo info = ConstantPoolTable[methodInfo.NameIndex - 1];
@@ -59,10 +96,32 @@ public class ClassInfo {
         }
     }
     
+    public String GetMethodDescriptor(MethodInfo methodInfo){
+        ConstantInfo info = ConstantPoolTable[methodInfo.DescriptorIndex - 1];
+        if(info.Tag == CONSTANT_UTF8){
+            return info.String;
+        }else{
+            return "";
+        }
+    }
+    
+    public MethodInfo GetMethod(String methodName, String methodDescriptor){
+        for(MethodInfo methodInfo : Methods){
+            String currentMethodName = GetMethodName(methodInfo);
+            String currentMethodDescriptor = GetMethodDescriptor(methodInfo);
+            if(currentMethodName.equals(methodName) && currentMethodDescriptor.equals(methodDescriptor)){
+                return methodInfo;
+            }
+        }
+        
+        return null;
+    }
+    
     public ConstantInfo GetConstantInfo(int index){
         return ConstantPoolTable[index - 1];
     }
     
+    @Deprecated
     public MethodInfo GetMethodByName(String methodName){
         for(MethodInfo methodInfo : Methods){
             String currentMethodName = GetMethodName(methodInfo);
@@ -83,6 +142,17 @@ public class ClassInfo {
         }
     }
     
+    public String GetClassName(){
+        ConstantInfo classInfo = ConstantPoolTable[ThisClass - 1];
+        ConstantInfo classNameInfo = ConstantPoolTable[classInfo.NameIndex - 1];
+        
+        if(classNameInfo.Tag == CONSTANT_UTF8){
+            return classNameInfo.String;
+        }else{
+            return "";
+        }
+    }
+    
     public byte GetAttributeTag(AttributeInfo attributeInfo){
         ConstantInfo info = ConstantPoolTable[attributeInfo.AttributeNameIndex - 1];
         
@@ -94,6 +164,11 @@ public class ClassInfo {
             default:
                 return 0;
         }
+    }
+    
+    public String GetClassNameFromPoolTable(int index){
+        ConstantInfo info = ConstantPoolTable[index - 1];
+        return info.String;
     }
     
     public int GetClassIndexFromPoolTable(int index){

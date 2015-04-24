@@ -12,6 +12,9 @@ import JavaInfo.ConstantInfo;
 import JavaInfo.MethodInfo;
 import JvmStack.OperandStack;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javavirtualmachine.Interpreter;
@@ -29,6 +32,8 @@ public class Invokespecial extends Instruction {
         CurrentPosition = tuple.Object2;
         int value = tuple.Object1;
         
+        String thisClassName = ClassInfo.GetClassName();
+        
         ConstantInfo methodRef = ClassInfo.GetConstantInfo(value);
         int classNameIndex = methodRef.ClassIndex;
         int nameAndType = methodRef.NameAndTypeIndex;
@@ -42,7 +47,7 @@ public class Invokespecial extends Instruction {
         ClassInfo classInfo = null;
         
         try {
-            classInfo = JavaClassLoader.Load(className);
+            classInfo = JavaClassLoader.Load(className, Interpreter);
             
             if(classInfo!= null){
                 //Najdi spravnou metodu
@@ -50,12 +55,21 @@ public class Invokespecial extends Instruction {
                 //TODO pri volani pod metod se mi prepisuje pozice
                 //lepsi by tedy bylo mit soucasnou pozici nekde ve Framu aby se mi neprepsala
                 int currentPosition = CurrentPosition;
-                Interpreter.Invoke(methodInfo, classInfo, null);
+                
+                //Ziskej attributy pro volanou metodu
+                LinkedList<Object> arguments = new LinkedList<>();
+                for(int i = 0; i < methodInfo.AttributesCount; i ++){
+                    arguments.addFirst(Frame.OperandStack.Pop());
+                }
+                
+                Object result = Interpreter.Invoke(methodInfo, classInfo, arguments);
+                if(result != null) Frame.OperandStack.Push(result);
+                
                 if(currentPosition != CurrentPosition){
                     CurrentPosition = currentPosition;
                 }
             }else{
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("The system cannot find the CLASS file.");
             }
         } catch (LoadFileClassIsNotCompletedException ex) {
             Logger.getLogger(Invokespecial.class.getName()).log(Level.SEVERE, null, ex);

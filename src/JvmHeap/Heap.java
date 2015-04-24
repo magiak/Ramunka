@@ -13,20 +13,24 @@ import java.util.Map;
  * @author lkmoch
  */
 public class Heap {
-    private Integer _nextInstanceIndex;
-    private Map<Integer, Instance> _instances;
+    private static Integer _nextInstanceIndex = 0;
+    public static Map<Integer, Instance> _instances = new HashMap<>();
     
     public Heap(){
         _nextInstanceIndex = 0;
         _instances = new HashMap<>();
     }
     
-    public int AddInstance(Instance instance){
+    public static void UpdateInstance(Integer index, Instance instance){
+        _instances.put(index, instance);
+    }
+    
+    public static int AddInstance(Instance instance){
         _instances.put(_nextInstanceIndex, instance);
         return _nextInstanceIndex ++;
     }
     
-    public Instance GetInstance(Integer index){
+    public static Instance GetInstance(Integer index){
         return _instances.get(index);
     }
 }

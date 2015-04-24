@@ -19,7 +19,8 @@ public class Bipush extends Instruction {
     @Override
     public void Execute(){
         Tuple<Byte, Integer> tuple = ByteReader.ReadByte(Code, CurrentPosition);
-        Frame.OperandStack.Push((int)tuple.Object1);
         CurrentPosition = tuple.Object2;
+        
+        Frame.OperandStack.Push((int)tuple.Object1);
     }
 }

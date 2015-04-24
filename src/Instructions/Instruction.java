@@ -21,9 +21,10 @@ public abstract class Instruction {
     public int CurrentPosition;
     public byte[] Code;
     public int CodeLength;
-    public Heap Heap;
+    //public Heap Heap;
     public Frame Frame;
     public Interpreter Interpreter;
+    public Object Result;
     
     public abstract void Execute() throws IOException;
 }

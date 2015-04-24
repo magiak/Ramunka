@@ -19,6 +19,6 @@ public class Isub extends Instruction {
        int cislo1 = (int)Frame.OperandStack.Pop();
        int cislo2 = (int)Frame.OperandStack.Pop();
        
-       Frame.OperandStack.Push(cislo2 + cislo1);
+       Frame.OperandStack.Push(cislo2 - cislo1);
     }
 }

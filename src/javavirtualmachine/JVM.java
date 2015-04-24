@@ -37,17 +37,17 @@ public class JVM {
     public void Execute() throws IOException{
         ClassInfo classInfo = null;
         try {
-            classInfo = JavaClassLoader.Load(_mainClassFileName);
+            classInfo = JavaClassLoader.Load(_mainClassFileName, _interpreter);
         } catch (LoadFileClassIsNotCompletedException ex) {
             Logger.getLogger(JVM.class.getName()).log(Level.SEVERE, null, ex);
         }
                 
-        System.out.println("KONEC NACITANI HLAVNIHO CLASS FILE");
+        //System.out.println("KONEC NACITANI HLAVNIHO CLASS FILE");
         
         
         //Interpret
         _interpreter.Execute(classInfo, _classFiles);
         
-        System.out.println("KONEC!!!!!!");
+        //System.out.println("KONEC!!!!!!");
     }
 }
