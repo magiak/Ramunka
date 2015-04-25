@@ -6,11 +6,14 @@
 package javavirtualmachine;
 
 import ByteHelper.ByteReader;
+import Instructions.Aaload;
+import Instructions.Aastore;
 import Instructions.Aconst_null;
 import Instructions.Aload_0;
 import Instructions.Aload_1;
 import Instructions.Aload_2;
 import Instructions.Aload_3;
+import Instructions.Anewarray;
 import Instructions.Arraylength;
 import Instructions.Astore_0;
 import Instructions.Astore_1;
@@ -30,6 +33,7 @@ import Instructions.Iconst_2;
 import Instructions.Iconst_3;
 import Instructions.Iconst_4;
 import Instructions.Iconst_5;
+import Instructions.Iconst_m1;
 import Instructions.If_icmpeq;
 import Instructions.If_icmpge;
 import Instructions.If_icmpgt;
@@ -101,6 +105,7 @@ public class Interpreter {
     
     public Interpreter(){
         _instructionMap = new HashMap<>();
+        _instructionMap.put((byte)2, new Iconst_m1());
         _instructionMap.put((byte)3, new Iconst_0());
         _instructionMap.put((byte)4, new Iconst_1());
         _instructionMap.put((byte)5, new Iconst_2());
@@ -149,6 +154,8 @@ public class Interpreter {
         _instructionMap.put((byte)76, new Astore_1());
         _instructionMap.put((byte)77, new Astore_2());
         _instructionMap.put((byte)78, new Astore_3());
+        _instructionMap.put((byte)83, new Aastore());
+        _instructionMap.put((byte)50, new Aaload());
         _instructionMap.put((byte)18, new Ldc());
         _instructionMap.put((byte)172, new ReturnResult()); //ireturn
         _instructionMap.put((byte)173, new ReturnResult()); //lreturn
@@ -157,6 +164,7 @@ public class Interpreter {
         _instructionMap.put((byte)176, new ReturnResult()); //areturn
         _instructionMap.put((byte)1, new Aconst_null());
         _instructionMap.put((byte)188, new Newarray());
+        _instructionMap.put((byte)189, new Anewarray());
         _instructionMap.put((byte)79, new Iastore());
         _instructionMap.put((byte)46, new Iaload());
         _instructionMap.put((byte)180, new Getfield());
@@ -220,11 +228,18 @@ public class Interpreter {
     }
     
     public Object NativeMethod(MethodInfo methodInfo, ClassInfo classInfo, List<Object> args){
+        int a = 5;
+        String methodName = classInfo.GetMethodName(methodInfo);
+        Map<Integer, Instance> instances = Heap._instances;
         switch(classInfo.GetMethodName(methodInfo)){
             case "print":
                 System.out.print(args.get(1));
                 break;
             case "println":
+                System.out.println(args.get(1));
+                break;
+            case "open":
+                String fileName = (String)args.get(0);
                 System.out.println(args.get(1));
                 break;
         }
@@ -267,6 +282,7 @@ public class Interpreter {
                 result = ExecuteCode(classInfo, frame, codeLength, code, args);
             }else{
                 //Jde nejspis o nativni metodu
+                //System.out.println("Invoke native");
                 NativeMethod(methodInfo, classInfo, args);
                 
             }
@@ -299,9 +315,18 @@ public class Interpreter {
             instruction.Code = code;
             instruction.CodeLength = codeLength;
             //instruction.Heap = _heap;
+            Map<Integer, Instance> instances = Heap._instances;
             instruction.Frame = frame;
             instruction.Interpreter = this;
 
+            frame.OperandStack.Print();
+            
+            if("javaapplication1/JavaApplication1".equals(classInfo.GetClassName()) || "knapsacksolver/KnapsackSolver".equals(classInfo.GetClassName())){
+                System.out.println((currentPosition - 1) + " " + instruction.getClass() + " " + classInfo.GetClassName());
+            }else{
+                System.out.println("   " + (currentPosition - 1) + " " + instruction.getClass() + " " + classInfo.GetClassName());
+            }
+            
             instruction.Execute();
             currentPosition = instruction.CurrentPosition;
             
